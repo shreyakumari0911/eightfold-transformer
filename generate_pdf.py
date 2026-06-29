@@ -100,7 +100,7 @@ def build_pdf():
     header_data = [
         [
             Paragraph("TECHNICAL DESIGN: MULTI-SOURCE CANDIDATE DATA TRANSFORMER", ParagraphStyle('H1', parent=title_style, textColor=text_light)),
-            Paragraph("<b>Author:</b> Senior Staff Engineer<br/><b>Target:</b> Production Release", ParagraphStyle('HSub', parent=body_style, textColor=colors.HexColor("#E2E8F0"), alignment=2))
+            Paragraph("<b>Author:</b> Shreya Kumari &nbsp;&bull;&nbsp; shreyasingh091102@gmail.com<br/><b>Assignment:</b> Eightfold Candidate Transformer", ParagraphStyle('HSub', parent=body_style, textColor=colors.HexColor("#E2E8F0"), alignment=2))
         ]
     ]
     header_table = Table(header_data, colWidths=[400, 176])
