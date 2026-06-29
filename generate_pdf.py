@@ -190,6 +190,7 @@ def build_pdf():
         Paragraph("7. Configurable Runtime Projection Layer", section_title_style),
         Paragraph(
             "Keeps the canonical profile separate from external outputs. Configured via <code>config.json</code>:<br/>"
+            "<b>Runtime Config:</b> Supports field inclusion, field renaming, normalization rules, provenance/confidence toggles, and configurable missing-value behavior without code changes.<br/>"
             "• <b>Inclusion/Exclusion:</b> Specify output fields in <code>include_fields</code> list.<br/>"
             "• <b>Field Renaming/Mapping:</b> Maps canonical terms to external targets (e.g., <code>full_name</code> → <code>name</code>).<br/>"
             "• <b>Metadata Toggles:</b> Dynamically enable/disable confidence arrays and provenance tracking.<br/>"
