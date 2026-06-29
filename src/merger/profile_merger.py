@@ -225,26 +225,63 @@ class ProfileMerger:
         if winner_loc_str:
             from src.normalizers.country import normalize_country
             from src.schemas.canonical import LocationDetails
-            cc = normalize_country(winner_loc_str)
-            location_obj = LocationDetails(raw=winner_loc_str, country_code=cc)
+            country = normalize_country(winner_loc_str)
             
-        # Compute links dictionary
-        links_dict = {}
+            # List of US states & abbreviations
+            US_STATES = {
+                "ca", "ny", "tx", "wa", "ma", "il", "fl", "pa", "oh", "ga", "nc", "mi", "va", "nj",
+                "california", "new york", "texas", "washington", "massachusetts", "illinois",
+                "florida", "pennsylvania", "ohio", "georgia", "north carolina", "michigan", "virginia", "new jersey"
+            }
+            
+            city = None
+            region = None
+            parts = [p.strip() for p in winner_loc_str.split(",")]
+            if len(parts) >= 3:
+                city = parts[0]
+                region = parts[1]
+            elif len(parts) == 2:
+                city = parts[0]
+                region = parts[1]
+                part_lower = parts[1].lower()
+                if part_lower in US_STATES:
+                    country = "US"
+                else:
+                    resolved_country_part = normalize_country(parts[1])
+                    if resolved_country_part and resolved_country_part == country:
+                        region = None
+            elif len(parts) == 1:
+                resolved_country_part = normalize_country(parts[0])
+                if resolved_country_part:
+                    country = resolved_country_part
+                else:
+                    city = parts[0]
+                    
+            location_obj = LocationDetails(city=city, region=region, country=country)
+            
+        # Compute links details object
+        linkedin = None
+        github = None
+        portfolio = None
+        other = []
         for link in links_union:
             link_lower = link.lower()
             if "linkedin.com" in link_lower:
-                links_dict["linkedin"] = link
+                linkedin = link
             elif "github.com" in link_lower:
-                links_dict["github"] = link
+                github = link
+            elif any(k in link_lower for k in ["portfolio", "personal", "website"]):
+                portfolio = link
             else:
-                import urllib.parse
-                try:
-                    parsed_url = urllib.parse.urlparse(link)
-                    domain = parsed_url.netloc.replace("www.", "")
-                    key = domain.split(".")[0] if domain else "portfolio"
-                except Exception:
-                    key = "portfolio"
-                links_dict[key] = link
+                other.append(link)
+                
+        from src.schemas.canonical import LinkDetails
+        links_obj = LinkDetails(
+            linkedin=linkedin,
+            github=github,
+            portfolio=portfolio,
+            other=other
+        )
 
         # Compute overall confidence
         overall_confidence = calculate_overall_confidence(field_confidence)
@@ -256,7 +293,7 @@ class ProfileMerger:
             emails=emails_union,
             phones=phones_union,
             location=location_obj,
-            links=links_dict,
+            links=links_obj,
             headline=winning_sources.get("headline", {}).get("val"),
             years_experience=winning_sources.get("years_experience", {}).get("val"),
             skills=skills_union,

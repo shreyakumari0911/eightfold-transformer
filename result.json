@@ -1,5 +1,5 @@
 {
-  "candidate_id": "fead97fe-da55-40ff-b363-acb2129530e3",
+  "candidate_id": "8b5015bf-ca82-4cc3-ae7d-fcec4ce4a27c",
   "name": "Alex Mercer",
   "emails": [
     "alex.mercer@email.com"
@@ -8,8 +8,9 @@
     "+15550199"
   ],
   "location": {
-    "raw": "San Francisco, CA",
-    "country_code": "US"
+    "city": "San Francisco",
+    "region": "CA",
+    "country": "US"
   },
   "skills": [
     "Languages: C Plus Plus",

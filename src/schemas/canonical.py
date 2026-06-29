@@ -8,8 +8,15 @@ class FieldProvenance(BaseModel):
     value: Any = None
 
 class LocationDetails(BaseModel):
-    raw: Optional[str] = None
-    country_code: Optional[str] = None
+    city: Optional[str] = None
+    region: Optional[str] = None
+    country: Optional[str] = None
+
+class LinkDetails(BaseModel):
+    linkedin: Optional[str] = None
+    github: Optional[str] = None
+    portfolio: Optional[str] = None
+    other: List[str] = Field(default_factory=list)
 
 class ExperienceItem(BaseModel):
     job_title: Optional[str] = None
@@ -31,7 +38,7 @@ class CandidateProfile(BaseModel):
     emails: List[str] = Field(default_factory=list)
     phones: List[str] = Field(default_factory=list)
     location: Optional[LocationDetails] = None
-    links: Dict[str, str] = Field(default_factory=dict)
+    links: Optional[LinkDetails] = None
     headline: Optional[str] = None
     years_experience: Optional[float] = None
     skills: List[str] = Field(default_factory=list)
