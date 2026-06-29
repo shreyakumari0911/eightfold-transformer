@@ -27,8 +27,10 @@ def validate_projected_profile(projected_data: Dict[str, Any], config: Dict[str,
     """
     Validates that the projected output profile matches expected constraints.
     Checks basic requirements like candidate_id (or renamed equivalent) presence, 
-    and checks if the fields present match the config specifications.
+    only if it was not explicitly excluded by the inclusion configuration.
     """
+    include_fields = config.get("include_fields", None)
+    
     # Look for the candidate identifier under any alias
     id_aliases = ["candidate_id"]
     if "rename_fields" in config:
@@ -40,6 +42,12 @@ def validate_projected_profile(projected_data: Dict[str, Any], config: Dict[str,
             if k == "candidate_id":
                 id_aliases.append(v)
                 
+    # If include_fields is specified and candidate_id is not in it, we do not require it.
+    if include_fields is not None:
+        id_is_included = any(alias in include_fields for alias in id_aliases)
+        if not id_is_included:
+            return True, ""
+            
     has_id = any(alias in projected_data for alias in id_aliases)
     if not has_id:
         return False, f"Validation Error: Projected profile is missing a candidate identifier field (expected one of: {id_aliases})"

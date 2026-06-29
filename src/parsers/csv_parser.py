@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 from typing import Dict, Any, List
 from src.parsers.base import BaseParser
 
@@ -59,9 +60,6 @@ class CSVParser(BaseParser):
                     raw_data[target_field] = [x.strip() for x in value.split(",") if x.strip()]
                 elif target_field == "skills":
                     # Split comma/semicolon-separated skills
-                    delimiters = [",", ";", "|"]
-                    pattern = "|".join(map(re.escape, delimiters)) if 're' in globals() else ","
-                    import re
                     skills_raw = re.split(r'[,;|]', value)
                     raw_data[target_field] = [x.strip() for x in skills_raw if x.strip()]
                 elif target_field == "years_experience":
@@ -69,7 +67,6 @@ class CSVParser(BaseParser):
                         raw_data[target_field] = float(value)
                     except ValueError:
                         # Extract first number from string e.g. "5 years" -> 5.0
-                        import re
                         match = re.search(r"[-+]?\d*\.\d+|\d+", value)
                         raw_data[target_field] = float(match.group()) if match else None
                 else:
