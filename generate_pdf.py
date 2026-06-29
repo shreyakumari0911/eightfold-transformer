@@ -2,60 +2,58 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
-import sys
 
 def build_pdf():
     pdf_filename = "Technical_Design.pdf"
     
-    # 0.25 inch margins for maximizing space to fit everything on a single page
+    # Minimal margins to guarantee single-page layout without cramming
     doc = SimpleDocTemplate(
         pdf_filename, 
         pagesize=letter,
-        rightMargin=18, 
-        leftMargin=18, 
-        topMargin=18, 
-        bottomMargin=18
+        rightMargin=20, 
+        leftMargin=20, 
+        topMargin=20, 
+        bottomMargin=20
     )
     
     styles = getSampleStyleSheet()
     
-    # Define color palette
-    primary_color = colors.HexColor("#1A365D")    # Slate Navy
-    secondary_color = colors.HexColor("#2B6CB0")  # Indigo Blue
-    accent_bg = colors.HexColor("#EDF2F7")        # Light Gray-Blue
-    text_dark = colors.HexColor("#2D3748")        # Charcoal
-    text_light = colors.HexColor("#FFFFFF")
-    divider_color = colors.HexColor("#CBD5E0")
+    # Modern, professional color palette (Slate & Blue)
+    navy_dark = colors.HexColor("#0F172A")       # Slate 900
+    blue_medium = colors.HexColor("#1D4ED8")     # Blue 700
+    text_dark = colors.HexColor("#334155")       # Slate 700
+    bg_accent = colors.HexColor("#F8FAFC")       # Slate 50
+    divider_color = colors.HexColor("#E2E8F0")   # Slate 200
     
     # Typography Styles
     title_style = ParagraphStyle(
         'DocTitle',
         parent=styles['Heading1'],
         fontName='Helvetica-Bold',
-        fontSize=14,
-        leading=16,
-        textColor=primary_color,
+        fontSize=12,
+        leading=14,
+        textColor=colors.white,
         spaceAfter=2
     )
     
     subtitle_style = ParagraphStyle(
         'DocSubtitle',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=8.5,
+        fontName='Helvetica',
+        fontSize=8,
         leading=10,
-        textColor=secondary_color,
-        spaceAfter=8
+        textColor=colors.HexColor("#94A3B8"),
+        spaceAfter=0
     )
     
     section_title_style = ParagraphStyle(
         'SectionTitle',
         parent=styles['Heading2'],
         fontName='Helvetica-Bold',
-        fontSize=9.5,
+        fontSize=9,
         leading=11,
-        textColor=primary_color,
-        spaceBefore=0,
+        textColor=navy_dark,
+        spaceBefore=4,
         spaceAfter=3,
         keepWithNext=True
     )
@@ -64,48 +62,34 @@ def build_pdf():
         'SectionBody',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=7.5,
-        leading=10,
+        fontSize=7.2,
+        leading=9.5,
         textColor=text_dark,
-        spaceAfter=4
+        spaceAfter=3
     )
     
-    body_bold_style = ParagraphStyle(
-        'SectionBodyBold',
-        parent=body_style,
-        fontName='Helvetica-Bold'
-    )
-    
-    header_cell_style = ParagraphStyle(
-        'HeaderCell',
+    diagram_style = ParagraphStyle(
+        'DiagramText',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=8,
-        leading=9,
-        textColor=text_light
-    )
-    
-    table_text_style = ParagraphStyle(
-        'TableText',
-        parent=styles['Normal'],
-        fontName='Helvetica',
         fontSize=7,
-        leading=8.5,
-        textColor=text_dark
+        leading=9,
+        textColor=blue_medium,
+        alignment=1  # Centered
     )
     
     story = []
     
-    # Header Banner (using a Table for styling)
+    # 1. Header Banner
     header_data = [
         [
-            Paragraph("TECHNICAL DESIGN: MULTI-SOURCE CANDIDATE DATA TRANSFORMER", ParagraphStyle('H1', parent=title_style, textColor=text_light)),
-            Paragraph("<b>Author:</b> Shreya Kumari &nbsp;&bull;&nbsp; shreyasingh091102@gmail.com<br/><b>Assignment:</b> Eightfold Candidate Transformer", ParagraphStyle('HSub', parent=body_style, textColor=colors.HexColor("#E2E8F0"), alignment=2))
+            Paragraph("TECHNICAL DESIGN: MULTI-SOURCE CANDIDATE DATA TRANSFORMER", title_style),
+            Paragraph("<b>Author:</b> Shreya Kumari &nbsp;&bull;&nbsp; shreyasingh091102@gmail.com<br/><b>Assignment:</b> Eightfold Candidate Transformer", subtitle_style)
         ]
     ]
-    header_table = Table(header_data, colWidths=[400, 176])
+    header_table = Table(header_data, colWidths=[360, 212])
     header_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), primary_color),
+        ('BACKGROUND', (0,0), (-1,-1), navy_dark),
         ('ALIGN', (0,0), (-1,-1), 'LEFT'),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
         ('TOPPADDING', (0,0), (-1,-1), 8),
@@ -114,121 +98,127 @@ def build_pdf():
         ('RIGHTPADDING', (0,0), (-1,-1), 10),
     ]))
     story.append(header_table)
-    story.append(Spacer(1, 8))
+    story.append(Spacer(1, 6))
     
-    # 2-Column Layout for the document body
-    # Left Column content list
+    # 2. Pipeline Diagram Box
+    diagram_data = [[
+        Paragraph(
+            "<b>Pipeline Diagram:</b> &nbsp; Input &rarr; Detect Source &rarr; Parse &rarr; Normalize &rarr; Merge &rarr; Confidence &rarr; Projection &rarr; Validation &rarr; JSON Output", 
+            diagram_style
+        )
+    ]]
+    diagram_table = Table(diagram_data, colWidths=[572])
+    diagram_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), bg_accent),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('BOX', (0,0), (-1,-1), 0.5, divider_color),
+    ]))
+    story.append(diagram_table)
+    story.append(Spacer(1, 6))
+    
+    # 3. Left and Right Columns
     left_flowables = [
         Paragraph("1. System Architecture & Pipeline", section_title_style),
         Paragraph(
-            "The system is built on a clean pipeline pattern using SOLID design principles. "
-            "It decouples raw data ingestion, text extraction, data normalization, merge resolution, "
-            "and runtime projection. The pipeline executes sequentially:<br/>"
-            "<b>Input Sources</b> → <b>Detect Source</b> → <b>Parse/Extract</b> → <b>Normalize</b> → "
-            "<b>Merge (Conflict Resolution)</b> → <b>Confidence Scoring</b> → <b>Projection Layer</b> → "
-            "<b>Schema Validation</b> → <b>JSON Output</b>",
+            "Built on a decoupled pipeline pattern executing sequentially:<br/>"
+            "&bull; <b>Ingestion:</b> Identifies and validates unstructured (PDF) and structured (CSV) source file paths.<br/>"
+            "&bull; <b>Parsing & Normalization:</b> Extracts fields and formats them to target standards prior to consolidation.<br/>"
+            "&bull; <b>Consolidation:</b> Executes conflict resolution policies and computes lineage metadata.<br/>"
+            "&bull; <b>Presentation:</b> Customizes schema projection shapes and formats values for validation.",
             body_style
         ),
         
         Paragraph("2. Canonical Schema Design", section_title_style),
         Paragraph(
-            "The canonical schema represents the single source of truth for candidate data. Defined using "
-            "Pydantic models for validation, it maintains strict type constraints:<br/>"
-            "• <b>candidate_id:</b> Determinsitic unique identifier.<br/>"
-            "• <b>full_name / headline / location / years_experience:</b> Canonical single values.<br/>"
-            "• <b>emails / phones / links / skills:</b> Normalized arrays representing union of inputs.<br/>"
-            "• <b>experience / education:</b> Structured sub-arrays sorted descending by start date.<br/>"
-            "• <b>provenance:</b> Map of fields to their source file, extraction method, and raw values.<br/>"
-            "• <b>field_confidence / overall_confidence:</b> Calculated indicators.",
+            "Defines the single source of truth for candidate attributes via strict Pydantic schemas:<br/>"
+            "&bull; <b>candidate_id:</b> Unique deterministic string generated per candidate.<br/>"
+            "&bull; <b>location:</b> Structured sub-schema containing <i>city</i>, <i>region</i>, and <i>country</i>.<br/>"
+            "&bull; <b>links:</b> Categorized endpoints mapping <i>linkedin</i>, <i>github</i>, <i>portfolio</i>, and <i>other</i> URL lists.<br/>"
+            "&bull; <b>history:</b> Structured arrays for <i>experience</i> and <i>education</i> chronologically ordered.<br/>"
+            "&bull; <b>metadata:</b> Lists tracking <i>provenance</i> logs and <i>field_confidence</i> levels.",
             body_style
         ),
         
         Paragraph("3. Normalization Strategy", section_title_style),
         Paragraph(
-            "Normalization is executed on individual source records before merging to ensure consistency:<br/>"
-            "• <b>Phones:</b> Standardized to <b>E.164</b> format using the Google <i>phonenumbers</i> library.<br/>"
-            "• <b>Dates:</b> Transformed to <b>YYYY-MM</b> format. Relies on <i>python-dateutil</i> to handle formats "
-            "('Jan 2018', '2018/01', etc.). Resolves 'Present/Current' to 'Present' and defaults missing months to Jan.<br/>"
-            "• <b>Country:</b> Normalized to <b>ISO-3166 alpha-2</b> code by searching location tokens in a compiled dictionary.<br/>"
-            "• <b>Skills:</b> Maps synonyms ('C Plus Plus', 'cpp' → 'C++') using exact lookups and fuzzy <i>rapidfuzz</i> matching.",
+            "Standardizes attributes individually before merging to ensure deterministic outcomes:<br/>"
+            "&bull; <b>Phones:</b> Formatted to <b>E.164</b> using the Google <i>phonenumbers</i> library. Mock numbers fall back to possible structures to ensure robust handling.<br/>"
+            "&bull; <b>Dates:</b> Standardized to <b>YYYY-MM</b>. Relies on <i>python-dateutil</i> to parse free-text inputs, resolving current timelines to 'Present'.<br/>"
+            "&bull; <b>Country:</b> Maps inputs to <b>ISO-3166-1 alpha-2</b>. Translates common US states (e.g. 'CA' &rarr; 'US') and defaults unresolved fields.<br/>"
+            "&bull; <b>Skills:</b> Resolves skills (e.g., 'cpp', 'C Plus Plus' &rarr; 'C++') using exact synonym mappings and fuzzy matching (`rapidfuzz`).",
             body_style
         ),
         
         Paragraph("4. Merge & Conflict Resolution Strategy", section_title_style),
         Paragraph(
-            "Merging combines data from multiple inputs using a <b>deterministic precedence policy</b>. "
-            "Candidate-authored primary sources (Resume PDF) overwrite third-party secondary sources (Recruiter CSV).<br/>"
-            "• <b>Precedence:</b> Resume PDF (Priority 2) > Recruiter CSV (Priority 1) > Unknown (0).<br/>"
-            "• <b>Conflict Resolution:</b> For single fields (e.g. name), the value with highest source priority wins. "
-            "If a conflict occurs, the winning source and method are recorded in the provenance schema.<br/>"
-            "• <b>Arrays & Nesting:</b> Email/phone arrays are unioned and deduplicated. Work history and education sections "
-            "are merged by fuzzy matching overlapping intervals (same company/degree + start year) and sorted chronologically.",
+            "Combines multiple candidate sources using a priority-based precedence logic:<br/>"
+            "&bull; <b>Precedence hierarchy:</b> Resume PDF (Priority 2) &gt; Recruiter CSV (Priority 1) &gt; Unknown (0).<br/>"
+            "&bull; <b>Conflict Policy:</b> Single-value fields are resolved by taking the value from the highest priority source.<br/>"
+            "&bull; <b>Array Unioning:</b> Deduplicates lists (emails, phones) and aggregates skills.<br/>"
+            "&bull; <b>Timeline Alignment:</b> Overlapping experiences (same company & start year) are consolidated and sorted by start date.",
             body_style
         )
     ]
     
-    # Right Column content list
     right_flowables = [
         Paragraph("5. Explainable Confidence Scoring", section_title_style),
         Paragraph(
-            "Confidence scores are computed deterministically per field based on source trustworthiness and "
-            "extraction methodologies. Raw scoring assignments:<br/>"
-            "• <b>Resume (Direct):</b> 0.95 &nbsp;&nbsp;|&nbsp;&nbsp; <b>CSV (Direct):</b> 0.90<br/>"
-            "• <b>Regex Extraction:</b> 0.80 &nbsp;&nbsp;|&nbsp;&nbsp; <b>Heuristics:</b> 0.60 &nbsp;&nbsp;|&nbsp;&nbsp; <b>Unknown:</b> 0.30<br/>"
-            "The <b>overall_confidence</b> score is calculated as the mathematical average of all populated field-level confidences.",
+            "Assigns explicit confidences representing the quality and certainty of the data:<br/>"
+            "&bull; <b>Resume (Direct):</b> 0.95 confidence weight.<br/>"
+            "&bull; <b>CSV (Direct):</b> 0.90 confidence weight.<br/>"
+            "&bull; <b>Regex extraction:</b> 0.80 confidence weight.<br/>"
+            "&bull; <b>Heuristics fallback:</b> 0.60 confidence weight.<br/>"
+            "&bull; <b>Unknown:</b> 0.30 fallback weight.<br/>"
+            "&bull; <b>Overall score:</b> Mathematical average of populated field-level confidence ratings.",
             body_style
         ),
         
         Paragraph("6. Provenance Model", section_title_style),
         Paragraph(
-            "To guarantee system explainability, the canonical output maps every populated field to its original "
-            "provenance record: <code>{field: {source: str, method: str, value: Any}}</code>. "
-            "If fields are merged from multiple sources, the winner's metadata is preserved, keeping auditability intact.",
+            "Ensures full audit lineage by tracking extraction lineage for every field:<br/>"
+            "&bull; Stores <b>field</b> name, <b>source</b> filename, and extraction <b>method</b>.<br/>"
+            "&bull; Lineage is recorded dynamically for all values, tracking the winning source for resolved conflicts.",
             body_style
         ),
         
         Paragraph("7. Configurable Runtime Projection Layer", section_title_style),
         Paragraph(
-            "Keeps the canonical profile separate from external outputs. Configured via <code>config.json</code>:<br/>"
             "<b>Runtime Config:</b> Supports field inclusion, field renaming, normalization rules, provenance/confidence toggles, and configurable missing-value behavior without code changes.<br/>"
-            "• <b>Inclusion/Exclusion:</b> Specify output fields in <code>include_fields</code> list.<br/>"
-            "• <b>Field Renaming/Mapping:</b> Maps canonical terms to external targets (e.g., <code>full_name</code> → <code>name</code>).<br/>"
-            "• <b>Metadata Toggles:</b> Dynamically enable/disable confidence arrays and provenance tracking.<br/>"
-            "• <b>Missing Values:</b> Choose <code>'null'</code> values or <code>'exclude'</code> (omitting empty keys).",
+            "&bull; <b>Field Selection:</b> Restructure output using <code>include_fields</code> list.<br/>"
+            "&bull; <b>Field Aliasing:</b> Rename fields dynamically (e.g. <code>full_name</code> &rarr; <code>name</code>).<br/>"
+            "&bull; <b>Metadata Filtering:</b> Enables toggling metadata lists (confidence, provenance).<br/>"
+            "&bull; <b>Missing Fields:</b> Handles missing data by outputting <code>'null'</code> values or <code>'exclude'</code> (removing empty keys).",
             body_style
         ),
         
         Paragraph("8. Schema Validation & Edge Cases", section_title_style),
         Paragraph(
-            "• <b>Validation:</b> Both the canonical profile and the final projected output are validated against Pydantic models. "
-            "Validation errors format into readable messages detailing field location, expected type, and actual input.<br/>"
-            "• <b>Edge Cases:</b> Gracefully handles empty files, missing fields (resolves to null/omitted), and duplicate candidates "
-            "(merged into one canonical record by checking email match prior to execution).",
+            "&bull; <b>Validation:</b> Standardizes inputs using Pydantic. Reports syntax and formatting errors as readable messages.<br/>"
+            "&bull; <b>Edge cases:</b> Gracefully handles empty source files, missing credentials, duplicate candidate records, and malformed files.",
             body_style
         ),
         
-        Paragraph("9. Assumptions & Future Improvements", section_title_style),
+        Paragraph("9. Assumptions & Future Enhancements", section_title_style),
         Paragraph(
-            "• <b>Assumptions:</b> Input source files are accessible. PDFs contain extractable text (non-scanned). "
-            "Profiles sharing an email address belong to the same candidate.<br/>"
-            "• <b>Future Enhancements:</b> Support additional parsers (LinkedIn, GitHub JSON, ATS XML). "
-            "Integrate OCR (e.g. Tesseract) for scanned PDF resumes. Train ML models for semantic-based section parsing.",
+            "&bull; <b>Assumptions:</b> Raw text is extractable from PDFs. Candidates sharing primary emails represent the same entity.<br/>"
+            "&bull; <b>Future Enhancements:</b> Support additional parsers (LinkedIn, GitHub JSON, ATS XML). Integrate OCR (Tesseract) for scanned resumes.",
             body_style
         )
     ]
     
-    # We place the two columns inside a 1-row table for side-by-side display
-    # Set the column widths (sum = letter width 612 - margins 36 = 576)
-    left_col_width = 282
-    right_col_width = 282
+    # Column width specifications (Total width = letter 612 - margin 40 = 572)
+    left_col_width = 280
+    right_col_width = 280
     spacer_width = 12
     
-    # Pack flowables into lists
     left_cell_table = Table([[x] for x in left_flowables], colWidths=[left_col_width])
     left_cell_table.setStyle(TableStyle([
         ('VALIGN', (0,0), (-1,-1), 'TOP'),
         ('LEFTPADDING', (0,0), (-1,-1), 0),
-        ('RIGHTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 5),
         ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ('TOPPADDING', (0,0), (-1,-1), 0),
     ]))
@@ -236,13 +226,12 @@ def build_pdf():
     right_cell_table = Table([[x] for x in right_flowables], colWidths=[right_col_width])
     right_cell_table.setStyle(TableStyle([
         ('VALIGN', (0,0), (-1,-1), 'TOP'),
-        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('LEFTPADDING', (0,0), (-1,-1), 5),
         ('RIGHTPADDING', (0,0), (-1,-1), 0),
         ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ('TOPPADDING', (0,0), (-1,-1), 0),
     ]))
     
-    # Master Table containing left and right columns separated by a vertical line
     master_table = Table([[left_cell_table, "", right_cell_table]], colWidths=[left_col_width, spacer_width, right_col_width])
     master_table.setStyle(TableStyle([
         ('VALIGN', (0,0), (-1,-1), 'TOP'),
@@ -250,20 +239,19 @@ def build_pdf():
         ('RIGHTPADDING', (0,0), (-1,-1), 0),
         ('TOPPADDING', (0,0), (-1,-1), 0),
         ('BOTTOMPADDING', (0,0), (-1,-1), 0),
-        # Vertical divider line in the center column
         ('LINEBEFORE', (2,0), (2,-1), 0.5, divider_color),
     ]))
     story.append(master_table)
     
-    # Footer Section
-    story.append(Spacer(1, 10))
+    # 4. Minimalist Page Footer
+    story.append(Spacer(1, 6))
     footer_data = [
         [
-            Paragraph("CONFIDENTIAL & PROPRIETARY", ParagraphStyle('F1', parent=body_style, textColor=colors.HexColor("#718096"))),
-            Paragraph("Page 1 of 1", ParagraphStyle('F2', parent=body_style, textColor=colors.HexColor("#718096"), alignment=2))
+            Paragraph("TECHNICAL DESIGN &bull; MULTI-SOURCE CANDIDATE TRANSFORMER", ParagraphStyle('F1', parent=body_style, fontSize=6.5, textColor=colors.HexColor("#94A3B8"))),
+            Paragraph("Page 1 of 1", ParagraphStyle('F2', parent=body_style, fontSize=6.5, textColor=colors.HexColor("#94A3B8"), alignment=2))
         ]
     ]
-    footer_table = Table(footer_data, colWidths=[288, 288])
+    footer_table = Table(footer_data, colWidths=[286, 286])
     footer_table.setStyle(TableStyle([
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
         ('TOPPADDING', (0,0), (-1,-1), 2),
@@ -273,7 +261,7 @@ def build_pdf():
     ]))
     story.append(footer_table)
     
-    # Build Document
+    # Build PDF
     doc.build(story)
     print("Technical Design document generated as Technical_Design.pdf successfully!")
 
