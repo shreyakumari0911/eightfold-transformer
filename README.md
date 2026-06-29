@@ -38,9 +38,11 @@ eightfold/
 │   ├── schemas/          # Pydantic schema schemas
 │   ├── tests/            # Pytest test suite
 │   └── validation/       # Schema validators
+├── sample_data/          # Subdirectory containing generated mock data
 ├── generate_pdf.py       # Script to generate the Technical Design PDF
 ├── generate_sample_data.py # Script to prepare mock input files
 ├── main.py               # Main CLI Pipeline entry point
+├── requirements.txt      # Project library dependencies list
 ├── README.md             # Project documentation
 └── config.json           # Sample runtime projection config
 ```
@@ -50,9 +52,10 @@ eightfold/
 ## Design Decisions, Tradeoffs & Assumptions
 
 ### Design Decisions
-- **Deterministic Precedence Merger:** Resume PDF data is prioritised over recruiter-filled CSV details, as candidates author their resumes, while recruiter records are susceptible to transcription errors.
+- **Deterministic Precedence Merger:** Resume PDF data is prioritized over recruiter-filled CSV details, as candidates author their resumes, while recruiter records are susceptible to transcription errors.
 - **Possible Number Validation Fallback:** Fictitious numbers (e.g. 555-0199) fail strict telecoms-plan carrier checks in Google `phonenumbers`. The phone normalizer falls back to `is_possible_number` formatting, preserving mock numbers while enforcing strict validation on real numbers.
 - **Fuzzy Skill Merging:** Implemented combining exact matching with fuzzy similarity lookups (`rapidfuzz`) to automatically map syntax variants ("cpp", "C Plus Plus" → "C++").
+- **Structured Location & Link Mapping:** Resolves raw location tokens into distinct fields (`city`, `region`, `country`) and partitions extracted link URLs into structured dictionary platforms (`linkedin`, `github`, `portfolio`, `other`).
 
 ### Tradeoffs
 - **Rule-based PDF Text Parsing vs. LLM Extractors:**
@@ -65,20 +68,15 @@ eightfold/
 
 ---
 
-## Dependencies
+## Setup & Installation
 
-- **pydantic**: Data parsing and schema validation
-- **pandas**: Structured CSV parsing
-- **pdfplumber**: PDF text extraction
-- **python-dateutil**: Robust date parsing
-- **phonenumbers**: E.164 phone formatting
-- **rapidfuzz**: Skill matching
-- **pytest**: Automated testing
-- **reportlab**: PDF Design Doc generation
+### Setup Instructions
+1. Clone or copy the repository to your local workspace.
+2. Install the required libraries via `requirements.txt`.
 
-To install all dependencies:
+### Install Command
 ```bash
-pip install pydantic pandas pdfplumber python-dateutil phonenumbers rapidfuzz pytest reportlab
+pip install -r requirements.txt
 ```
 
 ---
@@ -118,3 +116,99 @@ Run the full pytest suite:
 pytest src/tests/
 ```
 The test suite validates phone/date/skills normalizations, merge precedence rules, confidence calculations, projection toggles, missing value behaviors, and malformed input handles.
+
+---
+
+## Example Output JSON
+
+Below is an example of the standard output JSON produced by the transformer pipeline:
+
+```json
+{
+  "candidate_id": "f06f048e-3acd-495c-9979-c5ba369cc436",
+  "full_name": "Alex Mercer",
+  "emails": [
+    "alex.mercer@email.com"
+  ],
+  "phones": [
+    "+15550199"
+  ],
+  "location": {
+    "city": "San Francisco",
+    "region": "CA",
+    "country": "US"
+  },
+  "links": {
+    "linkedin": "https://linkedin.com/in/alexmercer",
+    "github": "https://github.com/alexmercer",
+    "portfolio": null,
+    "other": []
+  },
+  "headline": "Senior Staff Software Engineer",
+  "years_experience": 7.8,
+  "skills": [
+    "C++",
+    "Python",
+    "JavaScript",
+    "SQL",
+    "Html",
+    "Css",
+    "React",
+    "Node.js",
+    "Express",
+    "Fastapi",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "Git",
+    "Linux",
+    "Jira",
+    "MySQL",
+    "Redis",
+    "Ci/Cd",
+    "Restful",
+    "Scrum",
+    "Agile"
+  ],
+  "experience": [
+    {
+      "job_title": "Senior Staff Software Engineer",
+      "company": "Tech Corp",
+      "start_date": "2021-01",
+      "end_date": "Present",
+      "description": "• Led design and architecture of high-throughput candidate parsing engines..."
+    },
+    {
+      "job_title": "Software Engineer II",
+      "company": "Web Solutions",
+      "start_date": "2018-08",
+      "end_date": "2020-12",
+      "description": "• Developed responsive user interfaces using ReactJS..."
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S",
+      "institution": "Stanford University, California 2014 - 2018",
+      "field_of_study": "Computer Science\nStanford University",
+      "start_date": "2014-01",
+      "end_date": "2018-01"
+    }
+  ],
+  "provenance": [
+    {
+      "field": "full_name",
+      "source": "sample.pdf",
+      "method": "heuristic",
+      "value": "Alex Mercer"
+    },
+    {
+      "field": "location",
+      "source": "recruiter.csv",
+      "method": "csv_direct",
+      "value": "San Francisco, CA"
+    }
+  ],
+  "overall_confidence": 0.72
+}
+```
