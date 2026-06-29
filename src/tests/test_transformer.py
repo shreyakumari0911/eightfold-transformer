@@ -5,7 +5,7 @@ from src.normalizers.skills import normalize_skill, normalize_skills
 from src.merger.profile_merger import ProfileMerger
 from src.projection.projector import ProjectionLayer
 from src.validation.validator import validate_canonical_profile
-from src.schemas.canonical import CandidateProfile
+from src.schemas.canonical import CandidateProfile, LocationDetails, FieldProvenance
 
 # 1. Phone Normalization Tests
 def test_phone_normalization():
@@ -79,15 +79,18 @@ def test_conflict_resolution():
     # PDF values should win for single fields
     assert merged.full_name == "Alex Mercer"
     assert merged.headline == "Senior Staff Software Engineer"
-    assert merged.location == "San Francisco, USA"
+    assert merged.location.raw == "San Francisco, USA"
+    assert merged.location.country_code == "US"
     
     # Emails and phones should union (and phones normalize)
     assert "alex.mercer@email.com" in merged.emails
     assert "+15555555555" in merged.phones
     
     # Provenance check
-    assert merged.provenance["full_name"].source == "resume.pdf"
-    assert merged.provenance["full_name"].method == "heuristic"
+    full_name_prov = next((p for p in merged.provenance if p.field == "full_name"), None)
+    assert full_name_prov is not None
+    assert full_name_prov.source == "resume.pdf"
+    assert full_name_prov.method == "heuristic"
     
     # Confidence scoring verification
     assert merged.overall_confidence >= 0.70
@@ -101,7 +104,8 @@ def test_projection_layer():
         full_name="Alex Mercer",
         emails=["alex@email.com"],
         phones=["+15555555555"],
-        location="San Francisco, US",
+        location=LocationDetails(raw="San Francisco, US", country_code="US"),
+        links={"linkedin": "https://linkedin.com/in/alexmercer"},
         skills=["Python", "C++"],
         overall_confidence=0.85
     )

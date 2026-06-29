@@ -4,6 +4,8 @@ import re
 # Comprehensive mapping of common countries and their abbreviations to ISO-3166 alpha-2 codes.
 COUNTRY_MAP = {
     "united states": "US", "usa": "US", "united states of america": "US", "u.s.a.": "US", "us": "US",
+    "california": "US", "ca": "US", "new york": "US", "ny": "US", "texas": "US", "tx": "US",
+    "washington": "US", "wa": "US", "massachusetts": "US", "ma": "US", "illinois": "US", "il": "US",
     "india": "IN", "ind": "IN",
     "united kingdom": "GB", "uk": "GB", "u.k.": "GB", "great britain": "GB", "england": "GB", "scotland": "GB",
     "canada": "CA", "can": "CA",

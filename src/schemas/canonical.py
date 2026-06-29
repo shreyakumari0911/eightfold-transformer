@@ -7,6 +7,10 @@ class FieldProvenance(BaseModel):
     method: str
     value: Any = None
 
+class LocationDetails(BaseModel):
+    raw: Optional[str] = None
+    country_code: Optional[str] = None
+
 class ExperienceItem(BaseModel):
     job_title: Optional[str] = None
     company: Optional[str] = None
@@ -26,13 +30,13 @@ class CandidateProfile(BaseModel):
     full_name: Optional[str] = None
     emails: List[str] = Field(default_factory=list)
     phones: List[str] = Field(default_factory=list)
-    location: Optional[str] = None
-    links: List[str] = Field(default_factory=list)
+    location: Optional[LocationDetails] = None
+    links: Dict[str, str] = Field(default_factory=dict)
     headline: Optional[str] = None
     years_experience: Optional[float] = None
     skills: List[str] = Field(default_factory=list)
     experience: List[ExperienceItem] = Field(default_factory=list)
     education: List[EducationItem] = Field(default_factory=list)
-    provenance: Dict[str, FieldProvenance] = Field(default_factory=dict)
+    provenance: List[FieldProvenance] = Field(default_factory=list)
     field_confidence: Dict[str, float] = Field(default_factory=dict)
     overall_confidence: float = 0.0

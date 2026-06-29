@@ -1,5 +1,5 @@
 {
-  "candidate_id": "e0978e0e-558c-47b6-a1c4-40cee64f6162",
+  "candidate_id": "fead97fe-da55-40ff-b363-acb2129530e3",
   "name": "Alex Mercer",
   "emails": [
     "alex.mercer@email.com"
@@ -7,7 +7,10 @@
   "phones": [
     "+15550199"
   ],
-  "location": "San Francisco, CA",
+  "location": {
+    "raw": "San Francisco, CA",
+    "country_code": "US"
+  },
   "skills": [
     "Languages: C Plus Plus",
     "Python",
@@ -51,32 +54,32 @@
       "description": "(cid:127) Developed responsive user interfaces using ReactJS, Redux, and modern JavaScript standards.\n(cid:127) Built RESTful API endpoints using NodeJS and Express, integrating MySQL and Redis cache layers.\n(cid:127) Actively participated in Scrum and Agile sprints, driving product development cycles."
     }
   ],
-  "provenance": {
-    "full_name": {
+  "provenance": [
+    {
       "field": "full_name",
       "source": "sample.pdf",
       "method": "heuristic",
       "value": "Alex Mercer"
     },
-    "location": {
+    {
       "field": "location",
       "source": "recruiter.csv",
       "method": "csv_direct",
       "value": "San Francisco, CA"
     },
-    "headline": {
+    {
       "field": "headline",
       "source": "sample.pdf",
       "method": "heuristic",
       "value": "Senior Staff Software Engineer"
     },
-    "years_experience": {
+    {
       "field": "years_experience",
       "source": "sample.pdf",
       "method": "heuristic",
       "value": 7.8
     },
-    "emails": {
+    {
       "field": "emails",
       "source": "sample.pdf",
       "method": "regex",
@@ -84,7 +87,7 @@
         "alex.mercer@email.com"
       ]
     },
-    "phones": {
+    {
       "field": "phones",
       "source": "recruiter.csv",
       "method": "csv_direct",
@@ -92,7 +95,7 @@
         "+15550199"
       ]
     },
-    "links": {
+    {
       "field": "links",
       "source": "sample.pdf",
       "method": "regex",
@@ -101,7 +104,7 @@
         "https://github.com/alexmercer"
       ]
     },
-    "skills": {
+    {
       "field": "skills",
       "source": "sample.pdf",
       "method": "regex",
@@ -133,7 +136,7 @@
         "Agile"
       ]
     },
-    "experience": {
+    {
       "field": "experience",
       "source": "sample.pdf",
       "method": "heuristic_parsing",
@@ -154,7 +157,7 @@
         }
       ]
     },
-    "education": {
+    {
       "field": "education",
       "source": "sample.pdf",
       "method": "heuristic_parsing",
@@ -168,6 +171,6 @@
         }
       ]
     }
-  },
+  ],
   "overall_confidence": 0.72
 }

@@ -219,6 +219,33 @@ class ProfileMerger:
         else:
             provenance["education"] = FieldProvenance(field="education", source="N/A", method="N/A", value=[])
             
+        # Compute location details
+        winner_loc_str = winning_sources.get("location", {}).get("val")
+        location_obj = None
+        if winner_loc_str:
+            from src.normalizers.country import normalize_country
+            from src.schemas.canonical import LocationDetails
+            cc = normalize_country(winner_loc_str)
+            location_obj = LocationDetails(raw=winner_loc_str, country_code=cc)
+            
+        # Compute links dictionary
+        links_dict = {}
+        for link in links_union:
+            link_lower = link.lower()
+            if "linkedin.com" in link_lower:
+                links_dict["linkedin"] = link
+            elif "github.com" in link_lower:
+                links_dict["github"] = link
+            else:
+                import urllib.parse
+                try:
+                    parsed_url = urllib.parse.urlparse(link)
+                    domain = parsed_url.netloc.replace("www.", "")
+                    key = domain.split(".")[0] if domain else "portfolio"
+                except Exception:
+                    key = "portfolio"
+                links_dict[key] = link
+
         # Compute overall confidence
         overall_confidence = calculate_overall_confidence(field_confidence)
         
@@ -228,14 +255,14 @@ class ProfileMerger:
             full_name=winning_sources.get("full_name", {}).get("val"),
             emails=emails_union,
             phones=phones_union,
-            location=winning_sources.get("location", {}).get("val"),
-            links=links_union,
+            location=location_obj,
+            links=links_dict,
             headline=winning_sources.get("headline", {}).get("val"),
             years_experience=winning_sources.get("years_experience", {}).get("val"),
             skills=skills_union,
             experience=[ExperienceItem(**job) for job in merged_experience],
             education=[EducationItem(**edu) for edu in merged_education],
-            provenance=provenance,
+            provenance=list(provenance.values()),
             field_confidence=field_confidence,
             overall_confidence=overall_confidence
         )
