@@ -1,3 +1,5 @@
+# pyrefly: ignore [missing-import]
+import pandas as pd
 import json
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
