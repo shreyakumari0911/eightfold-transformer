@@ -1,5 +1,4 @@
-from typing import Dict, List, Any
-from src.schemas.canonical import FieldProvenance
+from typing import Dict
 
 # Method-based confidence levels as specified by user requirements
 CONFIDENCE_LEVELS = {

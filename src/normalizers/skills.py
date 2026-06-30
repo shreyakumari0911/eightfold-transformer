@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import List
+# pyrefly: ignore [missing-import]
 from rapidfuzz import process, fuzz
 
 # Canonical skills mapping dictionary

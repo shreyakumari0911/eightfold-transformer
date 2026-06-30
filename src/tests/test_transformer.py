@@ -5,7 +5,7 @@ from src.normalizers.skills import normalize_skill, normalize_skills
 from src.merger.profile_merger import ProfileMerger
 from src.projection.projector import ProjectionLayer
 from src.validation.validator import validate_canonical_profile
-from src.schemas.canonical import CandidateProfile, LocationDetails, FieldProvenance, LinkDetails
+from src.schemas.canonical import CandidateProfile, LocationDetails, LinkDetails
 
 # 1. Phone Normalization Tests
 def test_phone_normalization():

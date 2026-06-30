@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any
 from src.normalizers.phone import normalize_phone
 from src.normalizers.date import normalize_date
 from src.normalizers.country import normalize_country
